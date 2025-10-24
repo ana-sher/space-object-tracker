@@ -1,0 +1,45 @@
+# Space Object Tracker
+
+Tracking, analyzing and predicting the behavior of artificial satellites and debris. Focus areas: orbital pattern analysis, risk assessment, tracking evolution and orbital decay prediction, and flexible filtering pipelines.
+
+## Features
+- Read OMM from source (Celestrak)
+- Orbit propagation (SGP4)
+- Orbital pattern analysis (clustering, classification of orbital regimes)
+- Collision risk evaluation
+- Orbital decay prediction and lifetime estimation
+- Filter dataset (by altitude, inclination, operator, NORAD ID, lifetime, custom rules)
+- CLI and Python API for batch processing and experiments
+
+## Algorithms & methods
+- Propagation: SGP4
+- Risk assessment: closest approach calculation
+- Decay prediction
+- Filtering: endpoint with JSON filters object
+
+## Quickstart (example)
+1. Install
+```
+python -m venv .venv
+.venv/Scripts/activate
+pip install -r requirements.txt
+```
+2. Run
+```
+python src/main.py
+```
+
+## Data sources
+- Celestrak (OMM): public OMM files and collections
+
+## Examples
+- analyze how many satellites operate in low-Earth orbit (LEO)
+- find objects decaying within 180 days
+- monitor certain NORAD IDs for collision risk
+
+## Testing & validation
+- unit tests in tests/
+
+(- sample datasets for backtesting in tests/data)
+(- CI should run propagation consistency and scoring regressions)
+

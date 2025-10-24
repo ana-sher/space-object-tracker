@@ -1,0 +1,12 @@
+[project]
+name = "space-object-tracker"
+version = "0.1.0"
+description = "Space Object Tracker"
+authors = [{ name = "Anastasiia Shcherbakova" }]
+dependencies = ["requests", "pandas", "pydantic", "fastapi", "uvicorn", "sgp4"]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
