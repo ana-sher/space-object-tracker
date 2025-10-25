@@ -1,6 +1,9 @@
 from adapters.data_source_api import get_satellite_data, space_object_to_df
 import pandas as pd
 import logging
+from sqlalchemy import create_engine,MetaData
+
+from tracker.models import Base
 
 
 def run_tracker():
@@ -15,6 +18,9 @@ def run_tracker():
             logging.StreamHandler(),
         ],
     )
+
+    engine = create_engine("sqlite://", echo=True)
+    Base.metadata.create_all(engine)
 
     space_objects = get_satellite_data()
     df = space_object_to_df(space_objects)
