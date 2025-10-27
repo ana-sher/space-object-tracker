@@ -63,12 +63,14 @@ def save_or_skip(objects: list[T], db_engine: Engine, pkey: Optional[str] = None
         session.commit()
 
 
-def load_space_objects(db_engine: Engine) -> list[SpaceObject]:
+def load_space_objects(db_engine: Engine, page: int = 0, limit: int = 100) -> list[SpaceObject]:
     """
     Load all space objects from the database.
 
     Args:
         db_engine (Engine): SQLAlchemy database engine.
+        page (int): Page number for pagination.
+        limit (int): Number of records per page.
 
     Returns:
         list[SpaceObject]: List of space object instances retrieved from the database.
@@ -76,6 +78,7 @@ def load_space_objects(db_engine: Engine) -> list[SpaceObject]:
     with Session(db_engine) as session:
         results = (
             session.query(SpaceObject)
+            .offset(page * limit).limit(limit)
             .options(
                 selectinload(SpaceObject.position), selectinload(SpaceObject.velocity)
             )
@@ -84,16 +87,20 @@ def load_space_objects(db_engine: Engine) -> list[SpaceObject]:
     return results
 
 
-def load_satellites(db_engine: Engine) -> list[Satellite]:
+def load_satellites(
+    db_engine: Engine, page: int = 0, limit: int = 100
+) -> list[Satellite]:
     """
     Load all satellites from the database.
 
     Args:
         db_engine (Engine): SQLAlchemy database engine.
+        page (int): Page number for pagination.
+        limit (int): Number of records per page.
 
     Returns:
         list[Satellite]: List of satellite instances retrieved from the database.
     """
     with Session(db_engine) as session:
-        results = session.query(Satellite).all()
+        results = session.query(Satellite).offset(page * limit).limit(limit).all()
     return results

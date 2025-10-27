@@ -29,11 +29,18 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-2. Run
+2. Run db initialization, DataFrame console output
 
 ```
 python src/main.py
 ```
+
+3. (optional) Run API
+
+```
+fastapi dev src/application/api.py
+```
+Swagger Docs: http://127.0.0.1:8000/docs
 
 ## Data sources
 
