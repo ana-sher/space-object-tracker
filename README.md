@@ -40,7 +40,8 @@ python src/main.py
 ```
 fastapi dev src/application/api.py
 ```
-Swagger Docs: http://127.0.0.1:8000/docs
+
+Swagger Docs: <http://127.0.0.1:8000/docs>
 
 ## Data sources
 
@@ -55,6 +56,12 @@ Swagger Docs: http://127.0.0.1:8000/docs
 ## Testing & validation
 
 - unit tests in tests/
+
+To run tests:
+
+```
+pytest
+```
 
 (- sample datasets for backtesting in tests/data)
 (- CI should run propagation consistency and scoring regressions)
