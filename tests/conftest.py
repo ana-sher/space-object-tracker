@@ -9,9 +9,10 @@ from tracker.models import Base
 
 
 @pytest.fixture(scope="function")
-def test_engine():
+def test_engine(tmp_path):
+    db_file = tmp_path / "test.db"
     engine = create_engine(
-        "sqlite:///:memory:",
+        f"sqlite:///{db_file}",
         echo=True,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
