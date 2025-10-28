@@ -1,9 +1,10 @@
 import copy
 from datetime import datetime
 
-from adapters.database_storage import load_satellites, load_space_objects, save_or_skip
-from tracker.models import Satellite, SpaceObject, Vector3D
 from sqlalchemy.orm import Session
+
+from adapters.database_storage import save_or_skip
+from tracker.models import Satellite, SpaceObject, Vector3D
 
 
 def test_save_space_objects(test_engine):
@@ -110,6 +111,7 @@ def test_save_and_skip_space_objects(test_engine):
     assert loaded_objects[0].source == space_object.source
     session.close()
 
+
 def test_save_and_skip_space_objects_add_new(test_engine):
     space_object = SpaceObject(
         id=1,
@@ -124,7 +126,7 @@ def test_save_and_skip_space_objects_add_new(test_engine):
     changed_space_object = copy.deepcopy(space_object)
     changed_space_object.name = "Changed Name"
     save_or_skip([copy.deepcopy(changed_space_object)], test_engine)
-    changed_space_object.epoch=datetime.now()
+    changed_space_object.epoch = datetime.now()
     save_or_skip([copy.deepcopy(changed_space_object)], test_engine)
     session = Session(test_engine)
     loaded_objects = session.query(SpaceObject).all()

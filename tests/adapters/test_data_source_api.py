@@ -1,11 +1,13 @@
+from datetime import datetime
+
 import pytest
+
 from adapters.data_source_api import (
     extract_satellite_data,
-    get_satellite_data,
     extract_space_object_data,
+    get_satellite_data,
 )
 from tracker.models import Satellite, SpaceObject
-from datetime import datetime, timezone
 
 
 @pytest.fixture(scope="module")
@@ -39,6 +41,7 @@ def setup_test_data():
     ]
     return test_data
 
+
 def test_get_satellite_data():
     data = get_satellite_data()
     assert isinstance(data, list)
@@ -65,6 +68,7 @@ def test_get_satellite_data():
     }
     assert set(first_item.keys()) >= expected_keys
 
+
 def test_extract_space_object_data(setup_test_data):
     data = setup_test_data
 
@@ -76,7 +80,10 @@ def test_extract_space_object_data(setup_test_data):
     assert isinstance(first_object, SpaceObject)
     assert first_object.id == data[0]["NORAD_CAT_ID"]
     assert first_object.name == data[0]["OBJECT_NAME"]
-    assert first_object.epoch.timestamp() == datetime.fromisoformat(data[0]["EPOCH"]).timestamp()
+    assert (
+        first_object.epoch.timestamp()
+        == datetime.fromisoformat(data[0]["EPOCH"]).timestamp()
+    )
     assert first_object.position.x == 1868.0032467769893
     assert first_object.source == "CELESTRAK"
     assert first_object.position.y == 3811.677524434829
@@ -84,6 +91,7 @@ def test_extract_space_object_data(setup_test_data):
     assert first_object.velocity.x == -6.51613678696814
     assert first_object.velocity.y == 3.9971693526230117
     assert first_object.velocity.z == -0.5809016400286962
+
 
 def test_extract_satellite_data(setup_test_data):
     data = setup_test_data
@@ -96,7 +104,10 @@ def test_extract_satellite_data(setup_test_data):
     assert isinstance(first_object, Satellite)
     assert first_object.object_id == data[0]["OBJECT_ID"]
     assert first_object.object_name == data[0]["OBJECT_NAME"]
-    assert first_object.epoch.timestamp() == datetime.fromisoformat(data[0]["EPOCH"]).timestamp()
+    assert (
+        first_object.epoch.timestamp()
+        == datetime.fromisoformat(data[0]["EPOCH"]).timestamp()
+    )
     assert first_object.norad_cat_id == data[0]["NORAD_CAT_ID"]
     assert first_object.inclination == data[0]["INCLINATION"]
     assert first_object.eccentricity == data[0]["ECCENTRICITY"]
@@ -110,4 +121,3 @@ def test_extract_satellite_data(setup_test_data):
     assert first_object.bstar == data[0]["BSTAR"]
     assert first_object.mean_motion_dot == data[0]["MEAN_MOTION_DOT"]
     assert first_object.rev_at_epoch == data[0]["REV_AT_EPOCH"]
-

@@ -1,0 +1,40 @@
+name: lint
+
+on:
+    workflow_call:
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: '3.13'
+
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install black isort autoflake flake8
+
+            - name: Run autoflake
+              run: |
+                  autoflake --remove-all-unused-imports --remove-unused-variables -r src/
+                  autoflake --remove-all-unused-imports --remove-unused-variables -r tests/
+
+            - name: Run isort
+              run: |
+                  isort src/ --check-only
+                  isort tests/ --check-only
+
+            - name: Run Black
+              run: |
+                  black src/ --check
+                  black tests/ --check
+
+            - name: Run Flake8
+              run: |
+                  flake8 src/
+                  flake8 tests/

@@ -1,9 +1,8 @@
-from dataclasses import asdict
-from typing import Any, Optional, TypeVar
+from typing import Any, TypeVar
 
-from sqlalchemy import Engine, and_, insert
+from sqlalchemy import Engine, and_
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import Session, selectinload, Mapper
+from sqlalchemy.orm import Mapper, Session, selectinload
 
 from tracker.models import Satellite, SpaceObject
 

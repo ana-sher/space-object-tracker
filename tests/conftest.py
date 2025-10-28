@@ -1,17 +1,25 @@
 from typing import Generator
+
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from fastapi.testclient import TestClient
+from sqlalchemy import StaticPool, create_engine
+
 from application.api import app
 from tracker.models import Base
-from fastapi.testclient import TestClient
+
 
 @pytest.fixture(scope="function")
 def test_engine():
-    engine = create_engine("sqlite:///:memory:", echo=True)
+    engine = create_engine(
+        "sqlite:///:memory:",
+        echo=True,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
     Base.metadata.create_all(engine)
     yield engine
     engine.dispose()
+
 
 @pytest.fixture(scope="function")
 def client(test_engine) -> Generator[TestClient, None, None]:
@@ -32,6 +40,6 @@ def client(test_engine) -> Generator[TestClient, None, None]:
     app.dependency_overrides[load_space_objects] = load_space_objects_override
 
     with TestClient(app) as c:
-            yield c
+        yield c
 
     app.dependency_overrides.clear()
