@@ -1,9 +1,9 @@
 from dataclasses import asdict
 from typing import Any, Optional, TypeVar
 
-from sqlalchemy import Engine, insert
+from sqlalchemy import Engine, and_, insert
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.orm import Session, selectinload, Mapper
 
 from tracker.models import Satellite, SpaceObject
 
@@ -23,47 +23,63 @@ def save(objects: list[T], db_engine: Engine):
         session.commit()
 
 
-def save_or_skip(objects: list[T], db_engine: Engine, pkey: Optional[str] = None):
+def save_or_skip(objects: list[T], db_engine: Engine):
     """
     Bulk save or skip a list of T to the database.
 
     Args:
         objects (list[T]): List of T instances to save.
         db_engine (Engine): SQLAlchemy database engine.
-        pkey (Optional[str]): Primary key attribute name. If None, the first primary key of the model will be used.
     """
     if not objects:
         return
 
     model_type: Any = objects[0].__class__
 
-    if pkey is None:
-        mapper = inspect(model_type)
-        if not mapper:
-            return
-        pk_attr = mapper.primary_key[0]
-        pkey = pk_attr.key
+    mapper: Mapper = inspect(model_type)
+    if not mapper:
+        return
+    pk_attrs = mapper.primary_key
+    pkeys = [pk_attr.key for pk_attr in pk_attrs]
 
-    if pkey is None:
+    if pkeys is None:
+        return
+    if pkeys.count(None) > 0:
         return
 
-    ids = [getattr(obj, pkey) for obj in objects]
+    ids_m = [
+        [getattr(obj, pkey) for obj in objects] for pkey in pkeys if pkey is not None
+    ]
 
     with Session(db_engine) as session:
-        existing_ids = {
-            id_[0] for id_ in session.query(pk_attr).filter(pk_attr.in_(ids)).all()
-        }
-        to_insert = [o for o in objects if getattr(o, pkey) not in existing_ids]
-
+        existing_ids = [
+            existing_pks
+            for existing_pks in session.query(*pk_attrs)
+            .filter(
+                *[
+                    and_(
+                        *[pk_attr == ids_m[i][j] for i, pk_attr in enumerate(pk_attrs)]
+                    )
+                    for j in range(len(ids_m[0]))
+                ]
+            )
+            .all()
+        ]
+        to_insert = [
+            o
+            for o in objects
+            if tuple(getattr(o, pkey) for pkey in pkeys if pkey is not None)
+            not in existing_ids
+        ]
         if not to_insert:
             return
-        values = [asdict(o) for o in to_insert]  # type: ignore
-        query = insert(model_type).values(values)
-        session.execute(query)
+        session.add_all(to_insert)
         session.commit()
 
 
-def load_space_objects(db_engine: Engine, page: int = 0, limit: int = 100) -> list[SpaceObject]:
+def load_space_objects(
+    db_engine: Engine, page: int = 0, limit: int = 100
+) -> list[SpaceObject]:
     """
     Load all space objects from the database.
 
@@ -78,7 +94,8 @@ def load_space_objects(db_engine: Engine, page: int = 0, limit: int = 100) -> li
     with Session(db_engine) as session:
         results = (
             session.query(SpaceObject)
-            .offset(page * limit).limit(limit)
+            .offset(page * limit)
+            .limit(limit)
             .options(
                 selectinload(SpaceObject.position), selectinload(SpaceObject.velocity)
             )
