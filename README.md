@@ -19,7 +19,7 @@ Tracking, analyzing and predicting the behavior of artificial satellites and deb
 - Decay prediction
 - Filtering: endpoint with JSON filters object
 
-## Quickstart (example)
+## Quickstart
 
 1. Install
 
@@ -37,8 +37,17 @@ python src/main.py
 
 3. (optional) Run API
 
+Locally:
+
 ```
 fastapi dev src/application/api.py
+```
+
+Docker:
+
+```
+docker build -t space-object-tracker-image .
+docker run -d --name space-object-tracker-image -p 8000:80 space-object-tracker
 ```
 
 Swagger Docs: <http://127.0.0.1:8000/docs>
