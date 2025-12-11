@@ -6,7 +6,9 @@ import requests
 from sgp4 import omm
 from sgp4.api import Satrec, jday
 
-from tracker.models import Satellite, SpaceObject, Vector3D
+from src.tracker.models.satellite import SatelliteCreate
+from src.tracker.models.space_object import SpaceObjectCreate
+from src.tracker.models.vector3d import Vector3DCreate
 
 
 def get_satellite_data() -> list[dict]:
@@ -33,7 +35,7 @@ def get_satellite_data() -> list[dict]:
     return json
 
 
-def extract_satellite_data(data: list[dict]) -> list[Satellite]:
+def extract_satellite_data(data: list[dict]) -> list[SatelliteCreate]:
     """
     Extracts satellite data from the provided dictionary and returns a list of Satellite instances.
 
@@ -47,7 +49,7 @@ def extract_satellite_data(data: list[dict]) -> list[Satellite]:
     return [_to_satellite(fields) for fields in data]
 
 
-def extract_space_object_data(data: list[dict]) -> list[SpaceObject]:
+def extract_space_object_data(data: list[dict]) -> list[SpaceObjectCreate]:
     """
     Extracts space object data from the provided dictionary and returns a list of SpaceObject instances.
 
@@ -81,7 +83,7 @@ def extract_space_object_data(data: list[dict]) -> list[SpaceObject]:
     return spaceObjects
 
 
-def space_object_to_df(space_objects: list[SpaceObject]) -> pd.DataFrame:
+def space_object_to_df(space_objects: list[SpaceObjectCreate]) -> pd.DataFrame:
     """
     Converts space_objects list to DataFrame.
 
@@ -111,19 +113,19 @@ def space_object_to_df(space_objects: list[SpaceObject]) -> pd.DataFrame:
     )
 
 
-def _to_space_object(data: dict) -> SpaceObject:
-    return SpaceObject(
+def _to_space_object(data: dict) -> SpaceObjectCreate:
+    return SpaceObjectCreate(
         id=data["NORAD_CAT_ID"],
         name=data["OBJECT_NAME"],
         epoch=datetime.fromisoformat(data["EPOCH"]),
-        position=Vector3D(x=data["X"], y=data["Y"], z=data["Z"]),
-        velocity=Vector3D(x=data["VX"], y=data["VY"], z=data["VZ"]),
+        position=Vector3DCreate(x=data["X"], y=data["Y"], z=data["Z"]),
+        velocity=Vector3DCreate(x=data["VX"], y=data["VY"], z=data["VZ"]),
         source="CELESTRAK",
     )
 
 
-def _to_satellite(data: dict) -> Satellite:
-    return Satellite(
+def _to_satellite(data: dict) -> SatelliteCreate:
+    return SatelliteCreate(
         object_id=data["OBJECT_ID"],
         object_name=data["OBJECT_NAME"],
         ephemeris_type=data["EPHEMERIS_TYPE"],
