@@ -1,11 +1,16 @@
 # Space Object Tracker
 
-Tracking, analyzing and predicting the behavior of artificial satellites and debris. Focus areas: orbital pattern analysis, risk assessment, tracking evolution and orbital decay prediction, and flexible filtering pipelines.
+Storing historical OMM/TLE satelite data, transforms to calculated spatial and temporal properties via SGP4 for future analysis and prediction. Data being accessible and available via API endpoints, runnable locally via Docker. Unit testing via PyTest.
 
 ## Features
 
 - Read OMM from source (Celestrak)
 - Orbit propagation (SGP4)
+- Storing and retrieval of historical data via API endpoints (FastAPI)
+
+## Planned Features
+Tracking, analyzing and predicting the behavior of artificial satellites and debris. Focus areas: orbital pattern analysis, risk assessment, tracking evolution and orbital decay prediction, and flexible filtering pipelines.
+
 - Orbital pattern analysis (clustering, classification of orbital regimes)
 - Collision risk evaluation
 - Orbital decay prediction and lifetime estimation
